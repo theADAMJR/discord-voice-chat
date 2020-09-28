@@ -1,0 +1,29 @@
+body {
+  background-color: #23272A;
+  color: white;
+}
+
+a,
+a:hover {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li {
+  font-size: larger;
+}
+li img {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 50%;
+}
+
+li.speaking img {
+  border: 3px solid green;
+}

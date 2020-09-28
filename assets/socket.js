@@ -10,15 +10,14 @@ function setChannel(channelId = null) {
     userId,
     speaking: false,
     inChannel: Boolean(channelId)
-  });
-  
+  }, peerId);
+
   (channelId)
     ? $('#leaveButton').removeClass('disabled')
-    : $('#leaveButton').addClass('disabled')
+    : $('#leaveButton').addClass('disabled');
 }
 
 function updateVoiceMemberList(guild) {
-
   for (const channel of guild.channels.values()) {
     $(`#${channel.id} li`).remove();
     for (const member of channel.members.values())
@@ -31,11 +30,3 @@ function memberLi(user) {
     <span>${user.username}</span>
   </li>`;
 }
-
-socket.on('VOICE_STATE_UPDATE', (user, guild) => {
-  voiceStates.set(user.id, user.voice);
-
-  console.log(guild);
-  
-  updateVoiceMemberList(guild);
-});

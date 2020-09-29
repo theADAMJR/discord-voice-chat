@@ -9,6 +9,9 @@
     "dev": "nodemon server.js",
     "voice": "peerjs --port 3001"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

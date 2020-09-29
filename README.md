@@ -1,4 +1,6 @@
 # WS Voice Chat - Discord Style
-**Discord voice channel demo** that is very overoptimized that took ridiculously long and nearly works.
+**Discord voice channel demo** that is very overoptimized that took ridiculously long and seems to work.
 
-![Thou hast made a valiant effort](https://pbs.twimg.com/media/CuF1fF7WgAAsYIz.jpg)
+## Cool Features
+- Member auto leaves channel when they disconnect
+- U

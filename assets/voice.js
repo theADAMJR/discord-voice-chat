@@ -3,7 +3,7 @@ const socket = io('/');
 
 let guild = {};
 let currentChannelId = null;
-const calls = [];
+let calls = [];
 
 // peer calls
 
@@ -26,6 +26,8 @@ function disconnectFromVC() {
 
   for (const call of calls)
     call.close();
+
+  calls = [];
 }
 
 peer.on('call', (call) => {
@@ -48,7 +50,7 @@ socket.on('VOICE_STATE_UPDATE', (user, newGuild) => {
   updateVoiceMemberList(newGuild);
 });
 
-socket.emit('READY');
+socket.emit('READY', userId);
 
 // html events
 

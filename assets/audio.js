@@ -1,5 +1,5 @@
 class AudioSources {
-  sources = new Map();
+  #sources = new Map();
 
   play(id, stream) {
     if (id === userId) return;
@@ -8,24 +8,25 @@ class AudioSources {
     video.srcObject = stream;
     video.addEventListener('loadedmetadata', () => video.play());
 
-    this.sources.set(id, video);
+    this.#sources.set(id, video);
   }
 
   stop(id) {
-    const source = this.sources.get(id);
-    source?.remove();
+    const video = this.#sources.get(id);
+    if (!video) return;
 
-    this.sources.delete(id);
+    const stream = video.srcObject;
+    stream
+      .getTracks()
+      .forEach(track => track.stop());
+    video.srcObject = null;
+
+    this.#sources.delete(id);
   }
 
   stopAll() {
-    for (const entry of this.sources.entries()) {
-      const video = entry[1];
-      video.remove();
-
-      const id = entry[0];
-      this.sources.delete(id);
-    }
+    for (const key of this.#sources.keys())
+      this.stop(key);
   }
 }
 

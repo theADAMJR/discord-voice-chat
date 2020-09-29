@@ -61,8 +61,8 @@ function updateVoiceMemberList(guild) {
       $(`#${channel.id}`).append(memberLi(member)); 
   }   
 }
-function memberLi(user) {
-  return `<li id="${user.id}"><img src="${user.avatarURL}"><span>${user.username}</span></li>`;
+function memberLi(member) {
+  return `<li id="${member.id}"><img src="${member.avatarURL}"><span class="pl-1">${member.username}</span></li>`;
 }
 
 function setChannel(channelId = null) {

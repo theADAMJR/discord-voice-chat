@@ -34,9 +34,9 @@ io.on('connection', (socket) => {
     const member = members.get(userId);
     if (!member) return;
     
-    const channel = voiceChannels
-      .find(vc => vc.id === member.voice.channelId);
-    channel.remove(member);
+    voiceChannels
+      .find(vc => vc.id === member.voice.channelId)
+      ?.remove(member);
     
     io.sockets.emit('VOICE_STATE_UPDATE', member, getGuild());
   });

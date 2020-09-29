@@ -19,8 +19,8 @@ class VoiceChannel {
   }
 }
 
-class User {
-  username = `User${users.users.size + 1}`;
+class Member {
+  username = `User${members.cache.length + 1}`;
   voice = new UserVoiceState();
   avatarURL = 'https://cdn.discordapp.com/embed/avatars/0.png';
 
@@ -34,14 +34,16 @@ class UserVoiceState {
   inChannel = false;
 }
 
-class Users {
-  users = new Map();
+class Members {
+  cache = [];
 
   get(id) {
-    return this.users.get(id)
-      ?? this.users
-        .set(id, new User(id))
-        .get(id);
+    let member = this.cache.find(m => m.id === id);
+    if (!member) {
+      member = new Member(id);
+      this.cache.push(member);
+    }
+    return member;
   }
 }
 
@@ -49,11 +51,12 @@ class Users {
 const voiceChannels = [];
 voiceChannels.push(new VoiceChannel());
 
-const users = new Users();
+const members = new Members();
 
 module.exports.voiceChannels = voiceChannels;
-module.exports.users = users;
+module.exports.members = members;
 module.exports.getGuild = () => ({
   name: 'Some Guild',
-  channels: voiceChannels
+  channels: voiceChannels,
+  members
 });

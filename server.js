@@ -1,5 +1,5 @@
 const express = require('express');
-const { getGuild } = require('./mock-api');
+const { getGuild, members: users } = require('./mock-api');
 
 const app = express();
 

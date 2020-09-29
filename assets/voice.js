@@ -1,66 +1,94 @@
-const peer = new Peer(undefined, {
+const peer = new Peer(userId, {
   host: '/',
-  port: '3001'
+  port: '3001',
+  debug: 1
 });
 
-let peerId = null;
-peer.on('open', (uuid) => {
-  peerId = uuid;
-});
+let guild = {};
+const connections = [];
 
-// call
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-function connectToUser(uuid) {
+function connectToUser(userId) {
   getUserMedia({ video: false, audio: true }, (stream) => {
-    const call = peer.call(uuid, stream);
-    call.on('stream', (remoteStream) => {
-      // playAudio(remoteStream);
-    });
-  }, (err) => {
-    console.log('Failed to get local stream', err);
+    const call = peer.call(userId, stream);
+    call.on('stream', (theirStream) => audio.play(userId, theirStream));
+    call.on('close', () => audio.stop(userId))
   });
 }
 
-// answer
+// receive call
 peer.on('call', (call) => {
   getUserMedia({ video: false, audio: true }, (stream) => {
-    call.answer(stream); // Answer the call with an A/V stream.
+    connections.push(call.answer(stream));
     
-    call.on('stream', (remoteStream) => {
-      if (call.peer === peerId) return;
+    call.on('stream', (remoteStream) => audio.play(call.peer, remoteStream));
+    call.on('close', () => {
+      const state = guild.members.cache
+        .find(m => m.id === call.peer)?.state;
 
-      playAudio(remoteStream);
-    });
-    call.on('disconnected', () => {      
-      const state = voiceStates.get(userId);
       socket.emit('VOICE_STATE_UPDATE', {
         channelId: state?.channelId,
-        userId,
+        userId: call.peer,
         speaking: false,
         inChannel: false
-      }, peerId);
+      });
+      audio.stop(call.peer);
     });
-  }, (err) => {
-    console.log('Failed to get local stream', err);
   });
 });
 
-socket.on('VOICE_STATE_UPDATE', (user, guild, peerId) => {
-  voiceStates.set(user.id, user.voice);
-  
-  updateVoiceMemberList(guild);
+const socket = io('/');
 
-  (peerId)
-    ? connectToUser(peerId)
-    : stopAudio();
+socket.on('READY', (newGuild) => {
+  console.log(newGuild);
+  guild = newGuild;
 });
 
-function playAudio(stream) {
-  const video = document.createElement('video');
-  video.srcObject = stream;
-  video.addEventListener('loadedmetadata', () => video.play());
+socket.on('VOICE_STATE_UPDATE', (user, newGuild) => {
+  guild = newGuild;
+  updateVoiceMemberList(newGuild);
+});
+
+let currentChannelId = null;
+
+function setChannel(channelId = null) {
+  socket.emit('VOICE_STATE_UPDATE', {
+    channelId: channelId ?? currentChannelId,
+    userId,
+    speaking: false,
+    inChannel: Boolean(channelId)
+  });
+
+  if (channelId) {
+    $('#leaveButton').removeClass('disabled');
+
+    for (const member of guild.members.cache)
+      connectToUser(member.id);
+  }
+  else {
+    $('#leaveButton').addClass('disabled');
+    audio.removeAll();
+
+    for (const con of connections)
+      con.close();
+  }
+
+  currentChannelId = channelId;
 }
-function stopAudio() {
-  video.remove();
+
+function updateVoiceMemberList(guild) {
+  for (const channel of guild.channels.values()) {
+    $(`#${channel.id} li`).remove();
+    for (const member of channel.members.values())
+      $(`#${channel.id}`).append(memberLi(member)); 
+  }   
 }
+function memberLi(user) {
+  return `<li id="${user.id}">
+    <img src="${user.avatarURL}">
+    <span>${user.username}</span>
+  </li>`;
+}
+
+socket.emit('READY');

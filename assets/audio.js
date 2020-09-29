@@ -11,23 +11,22 @@ class AudioSources {
     this.sources.set(id, video);
   }
 
-  remove(id) {
+  stop(id) {
     const source = this.sources.get(id);
-    source.remove();
+    source?.remove();
 
     this.sources.delete(id);
   }
 
-  removeAll() {
+  stopAll() {
     for (const entry of this.sources.entries()) {
       const video = entry[1];
-      video.pause();
       video.remove();
 
       const id = entry[0];
       this.sources.delete(id);
     }
   }
-  
 }
+
 const audio = new AudioSources();

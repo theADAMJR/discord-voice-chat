@@ -29,7 +29,6 @@ class Member {
 
 class UserVoiceState {
   channelId = null;
-  speaking = false;
   userId = null;
   inChannel = false;
 }

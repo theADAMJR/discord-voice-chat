@@ -1,4 +1,4 @@
-const peer = new Peer(userId, { host: '/', port: '3001' });
+const peer = new Peer(userId);
 const socket = io('/');
 
 let guild = {};
